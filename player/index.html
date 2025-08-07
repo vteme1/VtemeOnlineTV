@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>ВТЕМЕ ТВ — Онлайн трансляция</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; background: black; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    video { width: 100%; max-width: 1000px; height: auto; background: #000; }
+    h1 { font-size: 18px; margin-top: 10px; }
+    .error { color: red; font-size: 16px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <video id="tv" controls autoplay></video>
+  <h1 id="videoTitle">Загрузка...</h1>
+  <div class="error" id="errorMsg"></div>
+
+  <script>
+    async function fetchSchedule() {
+      const res = await fetch("../data/schedule.json");
+      if (!res.ok) {
+        document.getElementById("errorMsg").textContent = "Ошибка загрузки расписания";
+        return null;
+      }
+      return res.json();
+    }
+
+    function getCurrentVideo(schedule) {
+      const now = new Date();
+      const day = now.getDay().toString();
+      const secondsToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+      const daySchedule = schedule[day] || [];
+      if (daySchedule.length === 0) return null;
+
+      const totalDuration = daySchedule.reduce((sum, video) => sum + video.duration, 0);
+      if (totalDuration === 0) return null;
+
+      const positionInLoop = secondsToday % totalDuration;
+
+      let timePointer = 0;
+      for (const video of daySchedule) {
+        const start = timePointer;
+        const end = start + video.duration;
+        if (positionInLoop >= start && positionInLoop < end) {
+          return video;
+        }
+        timePointer = end;
+      }
+
+      return null;
+    }
+
+    async function startPlayer() {
+      const schedule = await fetchSchedule();
+      if (!schedule) return;
+
+      const video = getCurrentVideo(schedule);
+      const player = document.getElementById("tv");
+      const title = document.getElementById("videoTitle");
+      const error = document.getElementById("errorMsg");
+
+      if (!video) {
+        title.textContent = "Нет видео для текущего времени.";
+        error.textContent = "";
+        return;
+      }
+
+      title.textContent = "🎬 Сейчас в эфире: " + video.title;
+      player.src = video.file;
+      player.onerror = () => {
+        error.textContent = "❌ Не удалось загрузить видео. Проверь ссылку.";
+      };
+    }
+
+    startPlayer();
+  </script>
+</body>
+</html>

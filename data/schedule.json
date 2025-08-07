@@ -1,0 +1,14 @@
+{
+  "0": [
+    { "file": "https://example.com/sunday1.mp4", "duration": 1800, "title": "Воскресный эфир 1" },
+    { "file": "https://example.com/sunday2.mp4", "duration": 3600, "title": "Воскресный эфир 2" }
+  ],
+  "1": [
+    { "file": "https://example.com/monday.mp4", "duration": 5400, "title": "Понедельник" }
+  ],
+  "2": [],
+  "3": [],
+  "4": [],
+  "5": [],
+  "6": []
+}

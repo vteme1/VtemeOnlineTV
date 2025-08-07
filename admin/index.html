@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>ВТЕМЕ ТВ — Админка (без длительности)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+    h1, h2 { text-align: center; color: #58a6ff; }
+    .container { max-width: 960px; margin: auto; }
+    .card { background: #161b22; border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+    input, select, button, textarea { width: 100%; padding: 10px; margin: 5px 0 15px; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 8px; font-size: 14px; }
+    button { background-color: #238636; color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.3s ease; }
+    button:hover { background-color: #2ea043; }
+    .video-item { padding: 12px; border-bottom: 1px solid #30363d; }
+    .video-item b { color: #79c0ff; }
+    .video-item span { display: block; font-size: 13px; margin-top: 3px; }
+    .video-item button { background: #c33; margin-top: 8px; }
+    .json-output { white-space: pre-wrap; background: #0f111a; border: 1px solid #30363d; padding: 15px; border-radius: 8px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ВТЕМЕ ТВ — Админ-панель</h1>
+
+    <div class="card">
+      <h2>➕ Добавить видео</h2>
+      <label>День недели:</label>
+      <select id="day">
+        <option value="0">Воскресенье</option>
+        <option value="1">Понедельник</option>
+        <option value="2">Вторник</option>
+        <option value="3">Среда</option>
+        <option value="4">Четверг</option>
+        <option value="5">Пятница</option>
+        <option value="6">Суббота</option>
+      </select>
+
+      <label>Название:</label>
+      <input type="text" id="title">
+
+      <label>Ссылка на .mp4 файл:</label>
+      <input type="url" id="url">
+
+      <button onclick="addVideo()">Добавить в расписание</button>
+      <div id="addStatus" style="color:#58a6ff;"></div>
+    </div>
+
+    <div class="card">
+      <h2>🎬 Видео в выбранный день</h2>
+      <div id="videoList">Загрузка…</div>
+    </div>
+
+    <div class="card">
+      <h2>📁 Экспорт расписания</h2>
+      <button onclick="downloadJSON()">Скачать schedule.json</button>
+      <textarea id="output" class="json-output" rows="12" readonly></textarea>
+    </div>
+  </div>
+
+  <script>
+    let schedule = JSON.parse(localStorage.getItem("vt_schedule_weekly")) || {
+      "0": [], "1": [], "2": [], "3": [], "4": [], "5": [], "6": []
+    };
+
+    function saveSchedule() {
+      localStorage.setItem("vt_schedule_weekly", JSON.stringify(schedule));
+    }
+
+    function renderVideos() {
+      const day = document.getElementById("day").value;
+      const container = document.getElementById("videoList");
+      const daySchedule = schedule[day] || [];
+      container.innerHTML = "";
+
+      if (daySchedule.length === 0) {
+        container.innerHTML = "<p>Пока нет видео в этом дне.</p>";
+        return;
+      }
+
+      daySchedule.forEach((video, index) => {
+        const div = document.createElement("div");
+        div.className = "video-item";
+        div.innerHTML = `
+          <b>${video.title}</b>
+          <span>⏱️ ${video.duration} сек</span>
+          <span>🔗 ${video.file}</span>
+          <button onclick="removeVideo(${index})">Удалить</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function removeVideo(index) {
+      const day = document.getElementById("day").value;
+      if (confirm("Удалить это видео?")) {
+        schedule[day].splice(index, 1);
+        saveSchedule();
+        renderVideos();
+      }
+    }
+
+    function downloadJSON() {
+      const output = document.getElementById("output");
+      output.value = JSON.stringify(schedule, null, 2);
+
+      const blob = new Blob([output.value], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "schedule.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function addVideo() {
+      const day = document.getElementById("day").value;
+      const title = document.getElementById("title").value.trim();
+      const url = document.getElementById("url").value.trim();
+      const status = document.getElementById("addStatus");
+
+      if (!title || !url || !url.endsWith(".mp4")) {
+        status.textContent = "❌ Введите название и корректную ссылку на .mp4 файл.";
+        return;
+      }
+
+      status.textContent = "⏳ Загружается видео для определения длительности...";
+
+      const tempVideo = document.createElement("video");
+      tempVideo.src = url;
+      tempVideo.preload = "metadata";
+      tempVideo.onloadedmetadata = () => {
+        const seconds = Math.floor(tempVideo.duration);
+        schedule[day].push({ title, file: url, duration: seconds });
+        saveSchedule();
+        renderVideos();
+        status.textContent = "✅ Добавлено!";
+        document.getElementById("title").value = "";
+        document.getElementById("url").value = "";
+      };
+      tempVideo.onerror = () => {
+        status.textContent = "❌ Не удалось загрузить видео.";
+      };
+    }
+
+    document.getElementById("day").addEventListener("change", renderVideos);
+    renderVideos();
+  </script>
+</body>
+</html>
