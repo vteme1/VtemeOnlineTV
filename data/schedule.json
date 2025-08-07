@@ -1,14 +1,51 @@
 {
   "0": [
-    { "file": "https://example.com/sunday1.mp4", "duration": 1800, "title": "Воскресный эфир 1" },
-    { "file": "https://example.com/sunday2.mp4", "duration": 3600, "title": "Воскресный эфир 2" }
+    {
+      "title": "Тестовая трансляция",
+      "file": "https://archive.org/download/electricsheep-flock-248-30000-0/00248%3D30020%3D27231%3D25654.mp4",
+      "duration": 600
+    }
   ],
   "1": [
-    { "file": "https://example.com/monday.mp4", "duration": 5400, "title": "Понедельник" }
+    {
+      "title": "Тестовая трансляция",
+      "file": "https://archive.org/download/electricsheep-flock-248-30000-0/00248%3D30020%3D27231%3D25654.mp4",
+      "duration": 600
+    }
   ],
-  "2": [],
-  "3": [],
-  "4": [],
-  "5": [],
-  "6": []
+  "2": [
+    {
+      "title": "Тестовая трансляция",
+      "file": "https://archive.org/download/electricsheep-flock-248-30000-0/00248%3D30020%3D27231%3D25654.mp4",
+      "duration": 600
+    }
+  ],
+  "3": [
+    {
+      "title": "Тестовая трансляция",
+      "file": "https://archive.org/download/electricsheep-flock-248-30000-0/00248%3D30020%3D27231%3D25654.mp4",
+      "duration": 600
+    }
+  ],
+  "4": [
+    {
+      "title": "Тестовая трансляция",
+      "file": "https://archive.org/download/electricsheep-flock-248-30000-0/00248%3D30020%3D27231%3D25654.mp4",
+      "duration": 600
+    }
+  ],
+  "5": [
+    {
+      "title": "Тестовая трансляция",
+      "file": "https://archive.org/download/electricsheep-flock-248-30000-0/00248%3D30020%3D27231%3D25654.mp4",
+      "duration": 600
+    }
+  ],
+  "6": [
+    {
+      "title": "Тестовая трансляция",
+      "file": "https://archive.org/download/electricsheep-flock-248-30000-0/00248%3D30020%3D27231%3D25654.mp4",
+      "duration": 600
+    }
+  ]
 }
