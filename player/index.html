@@ -74,7 +74,16 @@
       };
     }
 
-    startPlayer();
+    
+startPlayer();
+
+// Авто-зацикливание видео
+document.getElementById("tv").addEventListener("ended", () => {
+  const player = document.getElementById("tv");
+  player.currentTime = 0;
+  player.play();
+});
+
   </script>
 </body>
 </html>
